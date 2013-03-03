@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "cvt_color.hpp"
+#include "imgproc/cvt_color.hpp"
 
 extern "C" {
 

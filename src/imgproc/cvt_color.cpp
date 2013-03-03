@@ -6,8 +6,6 @@
 #include <cstring>
 #include <memory>
 
-#include "cvt_color_enum.hpp"
-
 namespace {
 
 #define TYPE_CVT_COLOR_ENUM (CvtColorEnum_get_type())
