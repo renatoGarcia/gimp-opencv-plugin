@@ -50,9 +50,11 @@ static void query(void)
                               "<Image>/_OpenCV/_imgproc/");
 }
 
-static void run(const gchar *name,
-                gint nparams, const GimpParam *param,
-                gint *nreturn_vals, GimpParam **return_vals)
+static void run(gchar const* name,
+                gint nParams,
+                GimpParam const* params,
+                gint* nReturnVals,
+                GimpParam** returnVals)
 {
     static GimpParam  values[1];
     GimpPDBStatusType status = GIMP_PDB_SUCCESS;
@@ -60,8 +62,8 @@ static void run(const gchar *name,
     GimpDrawable     *drawable;
 
     /* Setting mandatory output values */
-    *nreturn_vals = 1;
-    *return_vals  = values;
+    *nReturnVals = 1;
+    *returnVals  = values;
 
     values[0].type = GIMP_PDB_STATUS;
     values[0].data.d_status = status;
@@ -69,12 +71,13 @@ static void run(const gchar *name,
     /* Getting run_mode - we won't display a dialog if
      * we are in NONINTERACTIVE mode
      */
-    run_mode = (GimpRunMode)param[0].data.d_int32;
+    run_mode = (GimpRunMode)params[0].data.d_int32;
 
     /*  Get the specified drawable  */
-    drawable = gimp_drawable_get (param[2].data.d_drawable);
+    drawable = gimp_drawable_get (params[2].data.d_drawable);
 
-    if (std::strcmp(name, "cvtColor") == 0) {
+    if (std::strcmp(name, "cvtColor") == 0)
+    {
             cvtColor(drawable);
     }
 
