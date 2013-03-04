@@ -8,13 +8,13 @@ GIMP_LIBS=`$(GIMPTOOL) --libs`
 CV_FLAGS=`pkg-config --cflags opencv`
 CV_LIBS=`pkg-config --libs opencv`
 
-CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS)
+CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -g
 
 RM=rm -f
 
 VPATH=imgproc
 
-SOURCES=opencv.cpp cvt_color.cpp
+SOURCES=opencv.cpp utils.cpp cvt_color.cpp
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
 all: opencv

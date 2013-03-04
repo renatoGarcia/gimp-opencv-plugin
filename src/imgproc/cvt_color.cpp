@@ -6,6 +6,8 @@
 #include <cstring>
 #include <memory>
 
+#include "../utils.hpp"
+
 namespace {
 
 #define TYPE_CVT_COLOR_ENUM (CvtColorEnum_get_type())
@@ -262,51 +264,8 @@ void cvtColor(GimpDrawable *drawable)
     {
         return;
     }
-
-    gint channels;
-    gint x1, y1, x2, y2;
-    GimpPixelRgn rgn_in, rgn_out;
-
-    // /* Gets upper left and lower right coordinates,
-    //  * and layers number in the image */
-    gimp_drawable_mask_bounds(drawable->drawable_id,
-                              &x1, &y1,
-                              &x2, &y2);
-    channels = gimp_drawable_bpp(drawable->drawable_id);
-
-    /* Initialises two PixelRgns, one to read original data,
-     * and the other to write output data. That second one will
-     * be merged at the end by the call to
-     * gimp_drawable_merge_shadow() */
-    gimp_pixel_rgn_init(&rgn_in,
-                        drawable,
-                        x1, y1,
-                        x2 - x1, y2 - y1,
-                        FALSE, FALSE);
-    gimp_pixel_rgn_init(&rgn_out,
-                        drawable,
-                        x1, y1,
-                        x2 - x1, y2 - y1,
-                        TRUE, TRUE);
-
+    cv::Mat cvImage = drawableToMat(drawable);
     cv::Mat tmp;
-    cv::Mat cvImage(y2 - y1, x2 - x1, CV_8UC3);
-    gimp_pixel_rgn_get_rect(&rgn_in,
-                            cvImage.data,
-                            x1, y1,
-                            x2 - x1, y2 - y1);
-
     cv::cvtColor(cvImage, tmp, options->code);
-
-    gimp_pixel_rgn_set_rect(&rgn_out,
-                            tmp.data,
-                            x1, y1,
-                            x2 - x1, y2 - y1);
-
-    /* Update the modified region */
-    gimp_drawable_flush(drawable);
-    gimp_drawable_merge_shadow(drawable->drawable_id, TRUE);
-    gimp_drawable_update(drawable->drawable_id,
-                         x1, y1,
-                         x2 - x1, y2 - y1);
+    setMatToDrawable(tmp, drawable);
 }
