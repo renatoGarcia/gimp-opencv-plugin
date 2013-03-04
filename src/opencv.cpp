@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "imgproc/cvt_color.hpp"
+#include "imgproc/bilateral_filter.hpp"
 
 extern "C" {
 
@@ -39,14 +40,29 @@ static void query(void)
         "OpenCV color converter",
         "Renato Florentino Garcia",
         "Renato Florentino Garcia",
-        "2011",
+        "2013",
         "_cvtColor",
         "RGB*, GRAY*",
         GIMP_PLUGIN,
         G_N_ELEMENTS(args), 0,
         args, NULL);
 
+    gimp_install_procedure("bilateralFilter",
+        "OpenCV color converter",
+        "OpenCV color converter",
+        "Renato Florentino Garcia",
+        "Renato Florentino Garcia",
+        "2013",
+        "_bilateralFilter",
+        "RGB*, GRAY*",
+        GIMP_PLUGIN,
+        G_N_ELEMENTS(args), 0,
+        args, NULL);
+
     gimp_plugin_menu_register("cvtColor",
+                              "<Image>/_OpenCV/_imgproc/");
+
+    gimp_plugin_menu_register("bilateralFilter",
                               "<Image>/_OpenCV/_imgproc/");
 }
 
@@ -78,7 +94,11 @@ static void run(gchar const* name,
 
     if (std::strcmp(name, "cvtColor") == 0)
     {
-            cvtColor(drawable);
+        cvtColor(drawable);
+    }
+    else if (std::strcmp(name, "bilateralFilter") == 0)
+    {
+        bilateralFilter(drawable);
     }
 
     gimp_displays_flush();

@@ -1,6 +1,7 @@
 #ifndef _UTILS_HPP_
 #define _UTILS_HPP_
 
+#include <glib.h>
 #include <libgimp/gimp.h>
 #include <opencv2/core/core.hpp>
 
