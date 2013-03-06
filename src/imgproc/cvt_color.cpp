@@ -255,9 +255,31 @@ std::auto_ptr<Options> cvtColor_dialog()
     return options;
 }
 
+} // namespace
+
+void imgproc::cvtColor::install()
+{
+    static GimpParamDef args[] =
+    {
+        {GIMP_PDB_INT32,    (gchar*)"run-mode", (gchar*)"Run mode"},
+        {GIMP_PDB_IMAGE,    (gchar*)"image",    (gchar*)"Input image"},
+        {GIMP_PDB_DRAWABLE, (gchar*)"drawable", (gchar*)"Input drawable"}
+    };
+
+    gimp_install_procedure("cvtColor",
+        "OpenCV color converter",
+        "OpenCV color converter",
+        "Renato Florentino Garcia",
+        "Renato Florentino Garcia",
+        "2013",
+        "_cvtColor",
+        "RGB*, GRAY*",
+        GIMP_PLUGIN,
+        G_N_ELEMENTS(args), 0,
+        args, NULL);
 }
 
-void cvtColor(GimpDrawable *drawable)
+void imgproc::cvtColor::run(GimpDrawable *drawable)
 {
     std::auto_ptr<Options> options = cvtColor_dialog();
     if (options.get() == NULL)

@@ -3,6 +3,14 @@
 
 #include <libgimp/gimp.h>
 
-void bilateralFilter(GimpDrawable *drawable);
+namespace imgproc
+{
+    namespace bilateralFilter
+    {
+        void install();
+
+        void run(GimpDrawable *drawable);
+    }
+}
 
 #endif /* _IMGPROC_BILATERAL_FILTER_HPP_ */

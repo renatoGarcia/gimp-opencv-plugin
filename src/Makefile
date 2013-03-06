@@ -14,7 +14,7 @@ RM=rm -f
 
 VPATH=imgproc
 
-SOURCES=opencv.cpp utils.cpp cvt_color.cpp bilateral_filter.cpp
+SOURCES=opencv.cpp utils.cpp imgproc.cpp cvt_color.cpp bilateral_filter.cpp
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
 all: opencv

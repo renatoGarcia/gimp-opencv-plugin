@@ -6,8 +6,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "imgproc/cvt_color.hpp"
-#include "imgproc/bilateral_filter.hpp"
+#include "imgproc.hpp"
 
 extern "C" {
 
@@ -28,42 +27,7 @@ MAIN()
 
 static void query(void)
 {
-    static GimpParamDef args[] =
-    {
-        {GIMP_PDB_INT32,    (gchar*)"run-mode", (gchar*)"Run mode"},
-        {GIMP_PDB_IMAGE,    (gchar*)"image",    (gchar*)"Input image"},
-        {GIMP_PDB_DRAWABLE, (gchar*)"drawable", (gchar*)"Input drawable"}
-    };
-
-    gimp_install_procedure("cvtColor",
-        "OpenCV color converter",
-        "OpenCV color converter",
-        "Renato Florentino Garcia",
-        "Renato Florentino Garcia",
-        "2013",
-        "_cvtColor",
-        "RGB*, GRAY*",
-        GIMP_PLUGIN,
-        G_N_ELEMENTS(args), 0,
-        args, NULL);
-
-    gimp_install_procedure("bilateralFilter",
-        "OpenCV color converter",
-        "OpenCV color converter",
-        "Renato Florentino Garcia",
-        "Renato Florentino Garcia",
-        "2013",
-        "_bilateralFilter",
-        "RGB*, GRAY*",
-        GIMP_PLUGIN,
-        G_N_ELEMENTS(args), 0,
-        args, NULL);
-
-    gimp_plugin_menu_register("cvtColor",
-                              "<Image>/_OpenCV/_imgproc/");
-
-    gimp_plugin_menu_register("bilateralFilter",
-                              "<Image>/_OpenCV/_imgproc/");
+    imgproc::install();
 }
 
 static void run(gchar const* name,
@@ -94,11 +58,11 @@ static void run(gchar const* name,
 
     if (std::strcmp(name, "cvtColor") == 0)
     {
-        cvtColor(drawable);
+        imgproc::cvtColor::run(drawable);
     }
     else if (std::strcmp(name, "bilateralFilter") == 0)
     {
-        bilateralFilter(drawable);
+        imgproc::bilateralFilter::run(drawable);
     }
 
     gimp_displays_flush();

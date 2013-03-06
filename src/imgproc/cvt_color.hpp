@@ -4,6 +4,14 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
-void cvtColor(GimpDrawable *drawable);
+namespace imgproc
+{
+    namespace cvtColor
+    {
+        void install();
+
+        void run(GimpDrawable *drawable);
+    }
+}
 
 #endif /* _CVTCOLOR_HPP_ */

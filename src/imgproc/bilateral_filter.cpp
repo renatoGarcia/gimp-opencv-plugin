@@ -110,9 +110,31 @@ std::auto_ptr<Options> presentDialog()
     return options;
 }
 
+} // namespace
+
+void imgproc::bilateralFilter::install()
+{
+    static GimpParamDef args[] =
+    {
+        {GIMP_PDB_INT32,    (gchar*)"run-mode", (gchar*)"Run mode"},
+        {GIMP_PDB_IMAGE,    (gchar*)"image",    (gchar*)"Input image"},
+        {GIMP_PDB_DRAWABLE, (gchar*)"drawable", (gchar*)"Input drawable"}
+    };
+
+    gimp_install_procedure("bilateralFilter",
+        "OpenCV color converter",
+        "OpenCV color converter",
+        "Renato Florentino Garcia",
+        "Renato Florentino Garcia",
+        "2013",
+        "_bilateralFilter",
+        "RGB*, GRAY*",
+        GIMP_PLUGIN,
+        G_N_ELEMENTS(args), 0,
+        args, NULL);
 }
 
-void bilateralFilter(GimpDrawable *drawable)
+void imgproc::bilateralFilter::run(GimpDrawable *drawable)
 {
     std::auto_ptr<Options> options = presentDialog();
     if (options.get() == NULL)
