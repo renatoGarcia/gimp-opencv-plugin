@@ -66,19 +66,25 @@ std::auto_ptr<Options> presentDialog()
     //----- d
     GtkLabel* gtkLabel_1 = GTK_LABEL(gtk_label_new("d:"));
     gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkLabel_1), 0, 1, 0, 1);
-    GtkSpinButton* gtkSpinButton_1 = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(-1, 10000, 1));
+    GtkSpinButton* gtkSpinButton_1 = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(SpinButtonTraits<int>::min(),
+                                                                                    SpinButtonTraits<int>::max(),
+                                                                                    SpinButtonTraits<int>::step()));
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtkSpinButton_1), 0);
     gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkSpinButton_1), 1, 2, 0, 1);
     //----- sigmaColor
     GtkLabel* gtkLabel_2 = GTK_LABEL(gtk_label_new("sigmaColor:"));
     gtk_table_attach_defaults(gtkTable_1, GTK_WIDGET(gtkLabel_2), 0, 1, 1, 2);
-    GtkSpinButton* gtkSpinButton_2 = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(G_MINDOUBLE, G_MAXDOUBLE, 1.0E-7));
+    GtkSpinButton* gtkSpinButton_2 = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(SpinButtonTraits<double>::min(),
+                                                                                    SpinButtonTraits<double>::max(),
+                                                                                    SpinButtonTraits<double>::step()));
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtkSpinButton_2), 0);
     gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkSpinButton_2), 1, 2, 1, 2);
     //----- sigmaSpace
     GtkLabel* gtkLabel_3 = GTK_LABEL(gtk_label_new("sigmaSpace:"));
     gtk_table_attach_defaults(gtkTable_1, GTK_WIDGET(gtkLabel_3), 0, 1, 2, 3);
-    GtkSpinButton* gtkSpinButton_3 = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(G_MINDOUBLE, G_MAXDOUBLE, 1.0E-7));
+    GtkSpinButton* gtkSpinButton_3 = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(SpinButtonTraits<double>::min(),
+                                                                                    SpinButtonTraits<double>::max(),
+                                                                                    SpinButtonTraits<double>::step()));
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtkSpinButton_3), 0);
     gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkSpinButton_3), 1, 2, 2, 3);
     //----- borderType
