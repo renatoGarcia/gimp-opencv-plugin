@@ -64,6 +64,10 @@ static void run(gchar const* name,
     {
         imgproc::bilateralFilter::run(drawable);
     }
+    else if (std::strcmp(name, "blur") == 0)
+    {
+        imgproc::blur::run(drawable);
+    }
 
     gimp_displays_flush();
     gimp_drawable_detach(drawable);

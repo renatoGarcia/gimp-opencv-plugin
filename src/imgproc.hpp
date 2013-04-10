@@ -2,6 +2,7 @@
 #define _SRC_IMGPROC_HPP_
 
 #include "imgproc/bilateral_filter.hpp"
+#include "imgproc/blur.hpp"
 #include "imgproc/cvt_color.hpp"
 
 namespace imgproc
