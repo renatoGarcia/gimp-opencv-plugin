@@ -1,9 +1,7 @@
-#ifndef _UTILS_HPP_
-#define _UTILS_HPP_
+#ifndef _UTILITY_TRAITS_HPP_
+#define _UTILITY_TRAITS_HPP_
 
 #include <glib.h>
-#include <libgimp/gimp.h>
-#include <opencv2/core/core.hpp>
 
 template <typename T>
 struct SpinButtonTraits
@@ -43,8 +41,4 @@ struct SpinButtonTraits<double>
     }
 };
 
-cv::Mat drawableToMat(GimpDrawable* drawable);
-
-void setMatToDrawable(cv::Mat& mat, GimpDrawable* drawable);
-
-#endif /* _UTILS_HPP_ */
+#endif /* _UTILITY_TRAITS_HPP_ */

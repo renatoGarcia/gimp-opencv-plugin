@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include "conversions.hpp"
 
 cv::Mat drawableToMat(GimpDrawable* drawable)
 {

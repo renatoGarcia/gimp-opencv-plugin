@@ -7,7 +7,8 @@
 #include <libgimp/gimpui.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "../utils.hpp"
+#include "utility/conversions.hpp"
+#include "utility/traits.hpp"
 
 namespace
 {

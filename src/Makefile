@@ -8,13 +8,13 @@ GIMP_LIBS=`$(GIMPTOOL) --libs`
 CV_FLAGS=`pkg-config --cflags opencv`
 CV_LIBS=`pkg-config --libs opencv`
 
-CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -g
+CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -I$(CURDIR) -g
 
 RM=rm -f
 
-VPATH=imgproc
+VPATH=imgproc utility widget
 
-SOURCES=opencv.cpp utils.cpp imgproc.cpp cvt_color.cpp bilateral_filter.cpp blur.cpp
+SOURCES=opencv.cpp imgproc.cpp conversions.cpp cvt_color.cpp bilateral_filter.cpp blur.cpp
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
 all: opencv
