@@ -7,36 +7,12 @@
 #include <libgimp/gimpui.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "enums.hpp"
 #include "utility/conversions.hpp"
 #include "utility/traits.hpp"
 
 namespace
 {
-
-#define TYPE_BORDER_ENUM (BorderEnum_get_type())
-
-    GType BorderEnum_get_type()
-    {
-        static GType type = 0;
-        if (type == 0)
-        {
-            static GEnumValue const values[] =
-                {{cv::BORDER_REPLICATE, "BORDER_REPLICATE", "BORDER_REPLICATE"},
-                 {cv::BORDER_CONSTANT, "BORDER_CONSTANT", "BORDER_CONSTANT"},
-                 {cv::BORDER_REFLECT, "BORDER_REFLECT", "BORDER_REFLECT"},
-                 {cv::BORDER_WRAP, "BORDER_WRAP", "BORDER_WRAP"},
-                 {cv::BORDER_REFLECT_101, "BORDER_REFLECT_101", "BORDER_REFLECT_101"},
-                 {cv::BORDER_REFLECT101, "BORDER_REFLECT101", "BORDER_REFLECT101"},
-                 {cv::BORDER_TRANSPARENT, "BORDER_TRANSPARENT", "BORDER_TRANSPARENT"},
-                 {cv::BORDER_DEFAULT, "BORDER_DEFAULT", "BORDER_DEFAULT"},
-                 {cv::BORDER_ISOLATED, "BORDER_ISOLATED", "BORDER_ISOLATED"},
-                 {0, NULL, NULL}};
-
-		type = g_enum_register_static("BorderEnum", values);
-    }
-
-	return type;
-}
 
 struct Options
 {

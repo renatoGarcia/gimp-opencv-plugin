@@ -14,7 +14,7 @@ RM=rm -f
 
 VPATH=imgproc utility widget
 
-SOURCES=opencv.cpp imgproc.cpp conversions.cpp cvt_color.cpp bilateral_filter.cpp blur.cpp
+SOURCES=opencv.cpp imgproc.cpp conversions.cpp cvt_color.cpp bilateral_filter.cpp blur.cpp enums.cpp
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
 all: opencv
