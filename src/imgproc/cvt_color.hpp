@@ -2,7 +2,6 @@
 #define _CVT_COLOR_HPP_
 
 #include <libgimp/gimp.h>
-#include <libgimp/gimpui.h>
 
 namespace imgproc
 {

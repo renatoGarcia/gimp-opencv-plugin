@@ -1,6 +1,8 @@
 #include "blur.hpp"
 
+#include "enums.hpp"
 #include "widget/pair_widget.hpp"
+#include "widget/enum_widget.hpp"
 #include "utility/conversions.hpp"
 
 #include <gtk/gtk.h>
@@ -47,6 +49,12 @@ namespace
         PairWidget<cv::Point_<int> > anchorWidget(-1, -1);
         gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), anchorWidget, 1, 2, 1, 2);
 
+        //----- borderType
+        GtkLabel* gtkLabel_3 = GTK_LABEL(gtk_label_new("borderType:"));
+        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkLabel_3), 0, 1, 2, 3);
+
+        EnumWidget borderTypeWidget(TYPE_BORDER_ENUM, cv::BORDER_DEFAULT);
+        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), borderTypeWidget, 1, 2, 2, 3);
 
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
@@ -56,7 +64,7 @@ namespace
         boost::optional<Arguments> arguments;
         if (gimp_dialog_run(GIMP_DIALOG(dialog)) == GTK_RESPONSE_OK)
         {
-            arguments = Arguments(sizeWidget, anchorWidget, cv::BORDER_DEFAULT);
+            arguments = Arguments(sizeWidget, anchorWidget, borderTypeWidget);
         }
 
         gtk_widget_destroy(GTK_WIDGET(dialog));
@@ -98,6 +106,6 @@ void imgproc::blur::run(GimpDrawable *drawable)
 
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
-    cv::blur(src, dst, boost::get<0>(*arguments));
+    cv::blur(src, dst, boost::get<0>(*arguments), boost::get<1>(*arguments), boost::get<2>(*arguments));
     setMatToDrawable(dst, drawable);
 }

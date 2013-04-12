@@ -2,6 +2,7 @@
 #define _WIDGET_ENUM_WIDGET_HPP_
 
 #include <glib-object.h>
+#include <libgimp/gimpui.h>
 
 class EnumWidget
 {
