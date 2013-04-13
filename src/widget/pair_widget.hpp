@@ -1,7 +1,6 @@
 #ifndef _WIDGET_PAIR_WIDGET_HPP_
 #define _WIDGET_PAIR_WIDGET_HPP_
 
-#include "utility/conversions.hpp"
 #include "utility/meta.hpp"
 #include "utility/traits.hpp"
 

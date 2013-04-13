@@ -1,9 +1,9 @@
 #include "blur.hpp"
 
-#include "enums.hpp"
-#include "widget/pair_widget.hpp"
-#include "widget/enum_widget.hpp"
+#include "imgproc/enums.hpp"
 #include "utility/conversions.hpp"
+#include "widget/enum_widget.hpp"
+#include "widget/pair_widget.hpp"
 
 #include <gtk/gtk.h>
 #include <libgimp/gimpui.h>
@@ -11,7 +11,6 @@
 
 #include <boost/optional/optional.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <string>
 
 namespace
 {

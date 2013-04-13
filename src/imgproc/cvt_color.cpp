@@ -1,13 +1,13 @@
 #include "cvt_color.hpp"
 
-#include "enums.hpp"
+#include "imgproc/enums.hpp"
 #include "utility/conversions.hpp"
 #include "widget/enum_widget.hpp"
 
-#include <opencv2/highgui/highgui.hpp>
+#include <gtk/gtk.h>
+#include <libgimp/gimpui.h>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <memory>
 #include <boost/optional/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 

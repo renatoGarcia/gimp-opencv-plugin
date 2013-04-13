@@ -1,5 +1,5 @@
-#ifndef _CVT_COLOR_HPP_
-#define _CVT_COLOR_HPP_
+#ifndef _IMGPROC_CVT_COLOR_HPP_
+#define _IMGPROC_CVT_COLOR_HPP_
 
 #include <libgimp/gimp.h>
 
@@ -18,4 +18,4 @@ namespace imgproc
     }
 }
 
-#endif /* _CVTCOLOR_HPP_ */
+#endif /* _IMGPROC_CVTCOLOR_HPP_ */
