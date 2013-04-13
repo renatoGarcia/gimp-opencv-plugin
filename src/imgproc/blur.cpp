@@ -96,6 +96,11 @@ void imgproc::blur::install()
         args, NULL);
 }
 
+void imgproc::blur::registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+{
+    runFunctions["blur"] = imgproc::blur::run;
+}
+
 void imgproc::blur::run(GimpDrawable *drawable)
 {
     boost::optional<Arguments> arguments = presentDialog();

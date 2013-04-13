@@ -79,6 +79,11 @@ void imgproc::cvtColor::install()
                            args, NULL);
 }
 
+void imgproc::cvtColor::registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+{
+    runFunctions["cvtColor"] = imgproc::cvtColor::run;
+}
+
 void imgproc::cvtColor::run(GimpDrawable* drawable)
 {
     boost::optional<Arguments> arguments = presentDialog();

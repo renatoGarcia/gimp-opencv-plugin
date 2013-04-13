@@ -117,7 +117,12 @@ void imgproc::bilateralFilter::install()
         args, NULL);
 }
 
-void imgproc::bilateralFilter::run(GimpDrawable *drawable)
+void imgproc::bilateralFilter::registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+{
+    runFunctions["bilateralFilter"] = imgproc::bilateralFilter::run;
+}
+
+void imgproc::bilateralFilter::run(GimpDrawable* drawable)
 {
     std::auto_ptr<Options> options = presentDialog();
     if (options.get() == NULL)

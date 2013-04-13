@@ -3,13 +3,18 @@
 
 #include <libgimp/gimp.h>
 
+#include <map>
+#include <string>
+
 namespace imgproc
 {
     namespace bilateralFilter
     {
         void install();
 
-        void run(GimpDrawable *drawable);
+        void registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions);
+
+        void run(GimpDrawable* drawable);
     }
 }
 

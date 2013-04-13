@@ -1,12 +1,9 @@
-#include <libgimp/gimp.h>
-#include <libgimp/gimpui.h>
-
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <iostream>
-#include <cstring>
-
 #include "imgproc.hpp"
+
+#include <libgimp/gimp.h>
+
+#include <map>
+#include <string>
 
 extern "C" {
 
@@ -48,26 +45,18 @@ static void run(gchar const* name,
     values[0].type = GIMP_PDB_STATUS;
     values[0].data.d_status = status;
 
+    std::map<std::string, void(*)(GimpDrawable *drawable)> runFunctions;
+    imgproc::registerNames(runFunctions);
+
     /* Getting run_mode - we won't display a dialog if
      * we are in NONINTERACTIVE mode
      */
     run_mode = (GimpRunMode)params[0].data.d_int32;
 
     /*  Get the specified drawable  */
-    drawable = gimp_drawable_get (params[2].data.d_drawable);
+    drawable = gimp_drawable_get(params[2].data.d_drawable);
 
-    if (std::strcmp(name, "cvtColor") == 0)
-    {
-        imgproc::cvtColor::run(drawable);
-    }
-    else if (std::strcmp(name, "bilateralFilter") == 0)
-    {
-        imgproc::bilateralFilter::run(drawable);
-    }
-    else if (std::strcmp(name, "blur") == 0)
-    {
-        imgproc::blur::run(drawable);
-    }
+    runFunctions[name](drawable);
 
     gimp_displays_flush();
     gimp_drawable_detach(drawable);

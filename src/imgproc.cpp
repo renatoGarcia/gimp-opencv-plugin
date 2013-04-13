@@ -15,3 +15,10 @@ void imgproc::install()
                               "<Image>/_OpenCV/_imgproc/");
 
 }
+
+void imgproc::registerNames(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+{
+    bilateralFilter::registerName(runFunctions);
+    blur::registerName(runFunctions);
+    cvtColor::registerName(runFunctions);
+}
