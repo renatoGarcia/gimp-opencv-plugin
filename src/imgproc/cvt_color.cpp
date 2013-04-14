@@ -1,6 +1,7 @@
 #include "cvt_color.hpp"
 
 #include "imgproc/enums.hpp"
+#include "utility/bundle_widgets.hpp"
 #include "utility/conversions.hpp"
 #include "widget/enum_widget.hpp"
 
@@ -10,6 +11,7 @@
 
 #include <boost/optional/optional.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <vector>
 
 namespace
 {
@@ -32,22 +34,20 @@ namespace
 
                                         NULL));
 
-        EnumWidget enumWidget(TYPE_CVT_COLOR_ENUM, cv::COLOR_BGR2BGRA);
+        std::vector<boost::tuple<std::string, GtkWidget*> > argumentPairs;
 
-        GtkHBox* gtkHBox_1 = GTK_HBOX(gtk_hbox_new(FALSE, 0));
-        GtkLabel* gtkLabel_1 = GTK_LABEL(gtk_label_new("code:"));
-        gtk_container_add(GTK_CONTAINER(gtkHBox_1), GTK_WIDGET(gtkLabel_1));
-        gtk_container_add(GTK_CONTAINER(gtkHBox_1), enumWidget);
+        EnumWidget codeWidget(TYPE_CVT_COLOR_ENUM, cv::COLOR_BGR2BGRA);
+        argumentPairs.push_back(makeArgumentPair("code:", codeWidget));
+
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
-                          GTK_WIDGET(gtkHBox_1));
-
+                          GTK_WIDGET(bundleWidgets(argumentPairs)));
         gtk_widget_show_all(GTK_WIDGET(dialog));
 
         boost::optional<Arguments> arguments;
         if (gimp_dialog_run(GIMP_DIALOG(dialog)) == GTK_RESPONSE_OK)
         {
-            arguments = Arguments(enumWidget);
+            arguments = Arguments(codeWidget);
         }
 
         gtk_widget_destroy(GTK_WIDGET(dialog));

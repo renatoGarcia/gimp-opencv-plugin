@@ -1,6 +1,7 @@
 #include "blur.hpp"
 
 #include "imgproc/enums.hpp"
+#include "utility/bundle_widgets.hpp"
 #include "utility/conversions.hpp"
 #include "widget/enum_widget.hpp"
 #include "widget/pair_widget.hpp"
@@ -11,6 +12,7 @@
 
 #include <boost/optional/optional.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <vector>
 
 namespace
 {
@@ -33,37 +35,26 @@ namespace
 
                                         NULL));
 
-        GtkTable* gtkTable_1 = GTK_TABLE(gtk_table_new(3, 2, FALSE));
-        //----- ksize
-        GtkLabel* gtkLabel_1 = GTK_LABEL(gtk_label_new("ksize:"));
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkLabel_1), 0, 1, 0, 1);
+        std::vector<boost::tuple<std::string, GtkWidget*> > argumentPairs;
 
-        PairWidget<cv::Size_<int> > sizeWidget(0, 0);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), sizeWidget, 1, 2, 0, 1);
-
-        //----- anchor
-        GtkLabel* gtkLabel_2 = GTK_LABEL(gtk_label_new("anchor:"));
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkLabel_2), 0, 1, 1, 2);
+        PairWidget<cv::Size_<int> > ksizeWidget(0, 0);
+        argumentPairs.push_back(makeArgumentPair("ksize:", ksizeWidget));
 
         PairWidget<cv::Point_<int> > anchorWidget(-1, -1);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), anchorWidget, 1, 2, 1, 2);
-
-        //----- borderType
-        GtkLabel* gtkLabel_3 = GTK_LABEL(gtk_label_new("borderType:"));
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkLabel_3), 0, 1, 2, 3);
+        argumentPairs.push_back(makeArgumentPair("anchor:", anchorWidget));
 
         EnumWidget borderTypeWidget(TYPE_BORDER_ENUM, cv::BORDER_DEFAULT);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), borderTypeWidget, 1, 2, 2, 3);
+        argumentPairs.push_back(makeArgumentPair("borderType:", borderTypeWidget));
 
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
-                          GTK_WIDGET(gtkTable_1));
+                          GTK_WIDGET(bundleWidgets(argumentPairs)));
         gtk_widget_show_all(GTK_WIDGET(dialog));
 
         boost::optional<Arguments> arguments;
         if (gimp_dialog_run(GIMP_DIALOG(dialog)) == GTK_RESPONSE_OK)
         {
-            arguments = Arguments(sizeWidget, anchorWidget, borderTypeWidget);
+            arguments = Arguments(ksizeWidget, anchorWidget, borderTypeWidget);
         }
 
         gtk_widget_destroy(GTK_WIDGET(dialog));

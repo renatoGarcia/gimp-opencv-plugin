@@ -1,6 +1,7 @@
 #include "bilateral_filter.hpp"
 
 #include "imgproc/enums.hpp"
+#include "utility/bundle_widgets.hpp"
 #include "utility/conversions.hpp"
 #include "widget/numeric_widget.hpp"
 #include "widget/enum_widget.hpp"
@@ -11,6 +12,7 @@
 
 #include <boost/optional/optional.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <vector>
 
 namespace
 {
@@ -33,38 +35,23 @@ namespace
 
                                         NULL));
 
-        GtkTable* gtkTable_1 = GTK_TABLE(gtk_table_new(4, 2, FALSE));
-        //----- d
-        GtkLabel* gtkLabel_1 = GTK_LABEL(gtk_label_new("d:"));
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), GTK_WIDGET(gtkLabel_1), 0, 1, 0, 1);
+        std::vector<boost::tuple<std::string, GtkWidget*> > argumentPairs;
 
         NumericWidget<int> dWidget(0);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), dWidget, 1, 2, 0, 1);
-
-        //----- sigmaColor
-        GtkLabel* gtkLabel_2 = GTK_LABEL(gtk_label_new("sigmaColor:"));
-        gtk_table_attach_defaults(gtkTable_1, GTK_WIDGET(gtkLabel_2), 0, 1, 1, 2);
+        argumentPairs.push_back(makeArgumentPair("d:", dWidget));
 
         NumericWidget<double> sigmaColorWidget(0.0);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), sigmaColorWidget, 1, 2, 1, 2);
-
-        //----- sigmaSpace
-        GtkLabel* gtkLabel_3 = GTK_LABEL(gtk_label_new("sigmaSpace:"));
-        gtk_table_attach_defaults(gtkTable_1, GTK_WIDGET(gtkLabel_3), 0, 1, 2, 3);
+        argumentPairs.push_back(makeArgumentPair("sigmaColor:", sigmaColorWidget));
 
         NumericWidget<double> sigmaSpaceWidget(0.0);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), sigmaSpaceWidget, 1, 2, 2, 3);
-
-        //----- borderType
-        GtkLabel* gtkLabel_4 = GTK_LABEL(gtk_label_new("borderType:"));
-        gtk_table_attach_defaults(gtkTable_1, GTK_WIDGET(gtkLabel_4), 0, 1, 3, 4);
+        argumentPairs.push_back(makeArgumentPair("sigmaSpace:", sigmaSpaceWidget));
 
         EnumWidget borderTypeWidget(TYPE_BORDER_ENUM, cv::BORDER_DEFAULT);
-        gtk_table_attach_defaults(GTK_TABLE(gtkTable_1), borderTypeWidget, 1, 2, 3, 4);
+        argumentPairs.push_back(makeArgumentPair("borderType:", borderTypeWidget));
 
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
-                          GTK_WIDGET(gtkTable_1));
+                          GTK_WIDGET(bundleWidgets(argumentPairs)));
         gtk_widget_show_all(GTK_WIDGET(dialog));
 
         boost::optional<Arguments> arguments;
