@@ -3,6 +3,7 @@
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/conversions.hpp"
+#include "utility/meta.hpp"
 #include "widget/numeric_widget.hpp"
 #include "widget/enum_widget.hpp"
 
@@ -104,6 +105,6 @@ void imgproc::bilateralFilter::run(GimpDrawable* drawable)
 
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
-    cv::bilateralFilter(src, dst, boost::get<0>(*arguments), boost::get<1>(*arguments), boost::get<2>(*arguments), boost::get<3>(*arguments));
+    cv::bilateralFilter(src, dst, UNPACK_TUPLE(*arguments, 0, 3));
     setMatToDrawable(dst, drawable);
 }

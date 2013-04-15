@@ -3,6 +3,7 @@
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/conversions.hpp"
+#include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
 
 #include <gtk/gtk.h>
@@ -94,6 +95,6 @@ void imgproc::cvtColor::run(GimpDrawable* drawable)
 
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
-    cv::cvtColor(src, dst, boost::get<0>(*arguments));
+    cv::cvtColor(src, dst, UNPACK_TUPLE(*arguments, 0, 0));
     setMatToDrawable(dst, drawable);
 }

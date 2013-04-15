@@ -3,6 +3,7 @@
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/conversions.hpp"
+#include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
 #include "widget/pair_widget.hpp"
 
@@ -101,6 +102,6 @@ void imgproc::blur::run(GimpDrawable *drawable)
 
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
-    cv::blur(src, dst, boost::get<0>(*arguments), boost::get<1>(*arguments), boost::get<2>(*arguments));
+    cv::blur(src, dst, UNPACK_TUPLE(*arguments, 0, 2));
     setMatToDrawable(dst, drawable);
 }
