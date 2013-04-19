@@ -1,4 +1,3 @@
-
 CXX=g++
 GIMPTOOL=gimptool-2.0
 
@@ -8,13 +7,11 @@ GIMP_LIBS=`$(GIMPTOOL) --libs`
 CV_FLAGS=`pkg-config --cflags opencv`
 CV_LIBS=`pkg-config --libs opencv`
 
-CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -I$(CURDIR) -g
+CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -I$(CURDIR) -O3
 
 RM=rm -f
 
-VPATH=imgproc utility widget
-
-SOURCES=opencv.cpp imgproc.cpp conversions.cpp cvt_color.cpp bilateral_filter.cpp blur.cpp enums.cpp bundle_widgets.cpp box_filter.cpp
+SOURCES=$(shell find . -name '*.cpp')
 OBJECTS=$(SOURCES:%.cpp=%.o)
 
 all: opencv
@@ -29,4 +26,4 @@ install: opencv
 	$(GIMPTOOL) --install-bin opencv
 
 clean:
-	$(RM) *.o opencv *~
+	$(RM) $(OBJECTS) opencv
