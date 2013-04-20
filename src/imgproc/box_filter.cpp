@@ -19,7 +19,7 @@
 
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
-#include "utility/conversions.hpp"
+#include "utility/interface.hpp"
 #include "utility/meta.hpp"
 #include "widget/boolean_widget.hpp"
 #include "widget/enum_widget.hpp"
@@ -109,12 +109,12 @@ void imgproc::boxFilter::install()
         args, NULL);
 }
 
-void imgproc::boxFilter::registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+void imgproc::boxFilter::registerName(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions)
 {
     runFunctions["boxFilter"] = imgproc::boxFilter::run;
 }
 
-void imgproc::boxFilter::run(GimpDrawable *drawable)
+void imgproc::boxFilter::run(GimpRunMode, gint32, gint32 drawableId)
 {
     boost::optional<Arguments> arguments = presentDialog();
     if (!arguments)
@@ -122,8 +122,13 @@ void imgproc::boxFilter::run(GimpDrawable *drawable)
         return;
     }
 
+    GimpDrawable* const drawable = gimp_drawable_get(drawableId);
+
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
     cv::boxFilter(src, dst, -1, UNPACK_TUPLE(*arguments, 0, 3));
     setMatToDrawable(dst, drawable);
+
+    gimp_displays_flush();
+    gimp_drawable_detach(drawable);
 }

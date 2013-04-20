@@ -45,38 +45,25 @@ static void query(void)
 }
 
 static void run(gchar const* name,
-                gint nParams,
-                GimpParam const* params,
-                gint* nReturnVals,
-                GimpParam** returnVals)
+                gint nParams, GimpParam const* params,
+                gint* nReturnVals, GimpParam** returnVals)
 {
-    static GimpParam  values[1];
-    GimpPDBStatusType status = GIMP_PDB_SUCCESS;
-    GimpRunMode       run_mode;
-    GimpDrawable     *drawable;
+    static GimpParam values[1];
 
-    /* Setting mandatory output values */
+    // Setting mandatory output values
     *nReturnVals = 1;
     *returnVals  = values;
 
     values[0].type = GIMP_PDB_STATUS;
-    values[0].data.d_status = status;
+    values[0].data.d_status = GIMP_PDB_SUCCESS;
 
-    std::map<std::string, void(*)(GimpDrawable *drawable)> runFunctions;
+    std::map<std::string, void(*)(GimpRunMode, gint32, gint32)> runFunctions;
     imgproc::registerNames(runFunctions);
 
-    /* Getting run_mode - we won't display a dialog if
-     * we are in NONINTERACTIVE mode
-     */
-    run_mode = (GimpRunMode)params[0].data.d_int32;
-
-    /*  Get the specified drawable  */
-    drawable = gimp_drawable_get(params[2].data.d_drawable);
-
-    runFunctions[name](drawable);
-
-    gimp_displays_flush();
-    gimp_drawable_detach(drawable);
+    GimpRunMode const runMode = (GimpRunMode)params[0].data.d_int32;
+    gint32 const imageId = params[2].data.d_image;
+    gint32 const drawableId = params[2].data.d_drawable;
+    runFunctions[name](runMode, imageId, drawableId);
 }
 
 }

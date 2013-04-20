@@ -42,10 +42,10 @@ void imgproc::install()
 
 }
 
-void imgproc::registerNames(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+void imgproc::registerNames(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions)
 {
     bilateralFilter::registerName(runFunctions);
     blur::registerName(runFunctions);
-    cvtColor::registerName(runFunctions);
     boxFilter::registerName(runFunctions);
+    cvtColor::registerName(runFunctions);
 }

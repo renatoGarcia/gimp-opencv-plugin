@@ -19,7 +19,7 @@
 
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
-#include "utility/conversions.hpp"
+#include "utility/interface.hpp"
 #include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
 #include "widget/pair_widget.hpp"
@@ -104,12 +104,12 @@ void imgproc::blur::install()
         args, NULL);
 }
 
-void imgproc::blur::registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions)
+void imgproc::blur::registerName(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions)
 {
     runFunctions["blur"] = imgproc::blur::run;
 }
 
-void imgproc::blur::run(GimpDrawable *drawable)
+void imgproc::blur::run(GimpRunMode, gint32, gint32 drawableId)
 {
     boost::optional<Arguments> arguments = presentDialog();
     if (!arguments)
@@ -117,8 +117,13 @@ void imgproc::blur::run(GimpDrawable *drawable)
         return;
     }
 
+    GimpDrawable* const drawable = gimp_drawable_get(drawableId);
+
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
     cv::blur(src, dst, UNPACK_TUPLE(*arguments, 0, 2));
     setMatToDrawable(dst, drawable);
+
+    gimp_displays_flush();
+    gimp_drawable_detach(drawable);
 }

@@ -29,9 +29,9 @@ namespace imgproc
     {
         void install();
 
-        void registerName(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions);
+        void registerName(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions);
 
-        void run(GimpDrawable* drawable);
+        void run(GimpRunMode, gint32, gint32 drawableId);
     }
 }
 

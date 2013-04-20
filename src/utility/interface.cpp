@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along
  * with Gimp OpenCV Plugin. If not, see <http://www.gnu.org/licenses/>.
  */
-#include "conversions.hpp"
+#include "interface.hpp"
 
 cv::Mat drawableToMat(GimpDrawable* drawable)
 {

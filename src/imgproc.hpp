@@ -27,7 +27,7 @@ namespace imgproc
 {
     void install();
 
-    void registerNames(std::map<std::string, void(*)(GimpDrawable *drawable)>& runFunctions);
+    void registerNames(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions);
 }
 
 #endif /* _SRC_IMGPROC_HPP_ */
