@@ -20,6 +20,7 @@
 #include "imgproc/bilateral_filter.hpp"
 #include "imgproc/blur.hpp"
 #include "imgproc/box_filter.hpp"
+#include "imgproc/build_pyramid.hpp"
 #include "imgproc/cvt_color.hpp"
 
 void imgproc::install()
@@ -36,6 +37,10 @@ void imgproc::install()
     gimp_plugin_menu_register("boxFilter",
                               "<Image>/_OpenCV/_imgproc/");
 
+    buildPyramid::install();
+    gimp_plugin_menu_register("buildPyramid",
+                              "<Image>/_OpenCV/_imgproc/");
+
     cvtColor::install();
     gimp_plugin_menu_register("cvtColor",
                               "<Image>/_OpenCV/_imgproc/");
@@ -47,5 +52,6 @@ void imgproc::registerNames(std::map<std::string, void(*)(GimpRunMode, gint32, g
     bilateralFilter::registerName(runFunctions);
     blur::registerName(runFunctions);
     boxFilter::registerName(runFunctions);
+    buildPyramid::registerName(runFunctions);
     cvtColor::registerName(runFunctions);
 }

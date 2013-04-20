@@ -61,7 +61,7 @@ static void run(gchar const* name,
     imgproc::registerNames(runFunctions);
 
     GimpRunMode const runMode = (GimpRunMode)params[0].data.d_int32;
-    gint32 const imageId = params[2].data.d_image;
+    gint32 const imageId = params[1].data.d_image;
     gint32 const drawableId = params[2].data.d_drawable;
     runFunctions[name](runMode, imageId, drawableId);
 }

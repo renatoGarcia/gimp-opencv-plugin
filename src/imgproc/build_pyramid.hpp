@@ -15,21 +15,25 @@
  * You should have received a copy of the GNU General Public License along
  * with Gimp OpenCV Plugin. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _UTILITY_INTERFACE_HPP_
-#define _UTILITY_INTERFACE_HPP_
+#ifndef _IMGPROC_BUILD_PYRAMID_HPP_
+#define _IMGPROC_BUILD_PYRAMID_HPP_
 
 #include <libgimp/gimp.h>
-#include <opencv2/core/core.hpp>
 
+#include <map>
 #include <string>
 
-cv::Mat drawableToMat(GimpDrawable* drawable);
+namespace imgproc
+{
+    namespace buildPyramid
+    {
+        void install();
 
-void setMatToDrawable(cv::Mat& mat, GimpDrawable* drawable);
+        void registerName(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions);
 
-template <typename SinglePassRange>
-void insertLayersGroup(gint32 imageId, std::string const& layerGroupName, SinglePassRange const& range);
+        void run(GimpRunMode, gint32 imageId, gint32 drawableId);
+    }
+}
 
-#include "interface.ipp"
 
-#endif /* _UTILITY_INTERFACE_HPP_ */
+#endif /* _IMGPROC_BUILD_PYRAMID_HPP_ */
