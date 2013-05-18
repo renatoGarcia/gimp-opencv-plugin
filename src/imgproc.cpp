@@ -22,6 +22,7 @@
 #include "imgproc/box_filter.hpp"
 #include "imgproc/build_pyramid.hpp"
 #include "imgproc/cvt_color.hpp"
+#include "imgproc/dilate.hpp"
 
 void imgproc::install()
 {
@@ -45,6 +46,10 @@ void imgproc::install()
     gimp_plugin_menu_register("cvtColor",
                               "<Image>/_OpenCV/_imgproc/");
 
+    dilate::install();
+    gimp_plugin_menu_register("dilate",
+                              "<Image>/_OpenCV/_imgproc/");
+
 }
 
 void imgproc::registerNames(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions)
@@ -54,4 +59,5 @@ void imgproc::registerNames(std::map<std::string, void(*)(GimpRunMode, gint32, g
     boxFilter::registerName(runFunctions);
     buildPyramid::registerName(runFunctions);
     cvtColor::registerName(runFunctions);
+    dilate::registerName(runFunctions);
 }
