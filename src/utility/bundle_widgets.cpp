@@ -23,7 +23,7 @@ GtkTable* bundleWidgets(std::vector<boost::tuple<std::string, GtkWidget*> > cons
 
     GtkTable* const gtkTable = GTK_TABLE(gtk_table_new(nPairs, 2, FALSE));
 
-    for (int i = 0; i < nPairs; ++i)
+    for (std::size_t i = 0; i < nPairs; ++i)
     {
         boost::tuple<std::string, GtkWidget*> const& pair = argumentPairs.at(i);
 

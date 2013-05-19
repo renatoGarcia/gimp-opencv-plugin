@@ -45,7 +45,7 @@ static void query(void)
 }
 
 static void run(gchar const* name,
-                gint nParams, GimpParam const* params,
+                gint /*nParams*/, GimpParam const* params,
                 gint* nReturnVals, GimpParam** returnVals)
 {
     static GimpParam values[1];

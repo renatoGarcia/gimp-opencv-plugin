@@ -97,7 +97,7 @@ private:
     typename MatrixType::size_type nColumns;
     ElementType const defaultElement;
 
-    static void stAddRow(GtkWidget* widget, gpointer data)
+    static void stAddRow(GtkWidget* /*widget*/, gpointer data)
     {
         MatWidget* self = reinterpret_cast<MatWidget*>(data);
         self->addRow();
@@ -130,7 +130,7 @@ private:
         gtk_widget_show_all(GTK_WIDGET(this->gtkTable));
     }
 
-    static void stRemoveRow(GtkWidget* widget, gpointer data)
+    static void stRemoveRow(GtkWidget* /*widget*/, gpointer data)
     {
         MatWidget* self = reinterpret_cast<MatWidget*>(data);
         self->removeRow();
@@ -156,7 +156,7 @@ private:
                          0, 1, this->nRows + 2, this->nRows + 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
     }
 
-    static void stAddColumn(GtkWidget* widget, gpointer data)
+    static void stAddColumn(GtkWidget* /*widget*/, gpointer data)
     {
         MatWidget* self = reinterpret_cast<MatWidget*>(data);
         self->addColumn();
@@ -189,7 +189,7 @@ private:
         gtk_widget_show_all(GTK_WIDGET(this->gtkTable));
     }
 
-    static void stRemoveColumn(GtkWidget* widget, gpointer data)
+    static void stRemoveColumn(GtkWidget* /*widget*/, gpointer data)
     {
         MatWidget* self = reinterpret_cast<MatWidget*>(data);
         self->removeColumn();
