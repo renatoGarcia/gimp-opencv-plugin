@@ -57,7 +57,7 @@ namespace
         PairWidget<cv::Size_<int> > ksizeWidget(0, 0);
         argumentPairs.push_back(makeArgumentPair("ksize:", ksizeWidget));
 
-        MatWidget<uint8_t> kernelWidget;
+        MatWidget<double> kernelWidget(0.0);
         argumentPairs.push_back(makeArgumentPair("kernel:", kernelWidget));
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),

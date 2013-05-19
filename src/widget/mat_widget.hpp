@@ -18,22 +18,46 @@
 #ifndef _WIDGET_MAT_WIDGET_HPP_
 #define _WIDGET_MAT_WIDGET_HPP_
 
+#include "numeric_widget.hpp"
+
 #include <gtk/gtk.h>
 
+#include <boost/container/vector.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/multi_array.hpp>
 #include <stack>
 #include <string>
+
+namespace mat_widget_detail
+{
+    template <typename MatType>
+    struct SelectWidget
+    {};
+
+    template <>
+    struct SelectWidget<double>
+    {
+        typedef NumericWidget<double> type;
+    };
+}
 
 template <typename MatType>
 class MatWidget
 {
+private:
+    typedef MatType ElementType;
+    typedef typename mat_widget_detail::SelectWidget<ElementType>::type ElementWidget;
+    // Boost multi_array doesn't work with movable-only types...
+    typedef boost::container::vector<boost::container::vector<ElementWidget> > MatrixType;
+
 public:
-    MatWidget()
+    explicit MatWidget(ElementType const& defaultElement)
         : gtkTable(GTK_TABLE(gtk_table_new(1, 1, FALSE)))
         , gtkHBox_rowButons(this->createButtons(G_CALLBACK(stAddRow), G_CALLBACK(stRemoveRow)))
         , gtkHBox_colButons(this->createButtons(G_CALLBACK(stAddColumn), G_CALLBACK(stRemoveColumn)))
-        , matrix(boost::extents[0][0])
+        , matrix()
+        , nRows(0)
+        , nColumns(0)
+        , defaultElement(defaultElement)
     {
         g_object_ref_sink(G_OBJECT(this->gtkTable));
         g_object_ref_sink(G_OBJECT(this->gtkHBox_rowButons));
@@ -63,14 +87,15 @@ public:
     }
 
 private:
-    typedef boost::multi_array<GtkSpinButton*, 2> MatrixType;
-
     GtkTable* const gtkTable;
     GtkHBox* const gtkHBox_rowButons;
     GtkHBox* const gtkHBox_colButons;
     std::stack<GtkLabel*> rowHeader;
     std::stack<GtkLabel*> columnHeader;
     MatrixType matrix;
+    typename MatrixType::size_type nRows;
+    typename MatrixType::size_type nColumns;
+    ElementType const defaultElement;
 
     static void stAddRow(GtkWidget* widget, gpointer data)
     {
@@ -79,31 +104,28 @@ private:
     }
     void addRow()
     {
-        MatrixType::size_type const nRows = this->matrix.shape()[0] + 1;
-        MatrixType::size_type const nColumns = this->matrix.shape()[1];
+        ++this->nRows;
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons));
 
-        this->matrix.resize(boost::extents[nRows][nColumns]);
-        gtk_table_resize(this->gtkTable, nRows + 2, nColumns + 2);
+        gtk_table_resize(this->gtkTable, this->nRows + 2, this->nColumns + 2);
 
-        GtkLabel* const gtkLabel = GTK_LABEL(gtk_label_new(boost::lexical_cast<std::string>(nRows - 1).c_str()));
+        GtkLabel* const gtkLabel = GTK_LABEL(gtk_label_new(boost::lexical_cast<std::string>(this->nRows - 1).c_str()));
         g_object_ref_sink(G_OBJECT(gtkLabel));
         this->rowHeader.push(gtkLabel);
-        gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), 0, 1, nRows, nRows + 1);
+        gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), 0, 1, this->nRows, this->nRows + 1);
 
-        for (MatrixType::size_type col = 0; col < nColumns; ++col)
+        this->matrix.push_back(boost::container::vector<ElementWidget>());
+        for (typename MatrixType::size_type col = 0; col < this->nColumns; ++col)
         {
-            GtkSpinButton* const gtkSpinButton = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(0, 10, 1));
-            g_object_ref_sink(G_OBJECT(gtkSpinButton));
-
-            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), GTK_WIDGET(gtkSpinButton),
-                                      col + 1, col + 2, nRows, nRows + 1);
-            this->matrix[nRows - 1][col] = gtkSpinButton;
+            ElementWidget elementWidget(this->defaultElement);
+            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)elementWidget,
+                                      col + 1, col + 2, this->nRows, this->nRows + 1);
+            this->matrix.back().push_back(boost::move(elementWidget));
         }
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons),
-                         0, 1, nRows + 2, nRows + 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
+                         0, 1, this->nRows + 2, this->nRows + 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
         gtk_widget_show_all(GTK_WIDGET(this->gtkTable));
     }
@@ -115,25 +137,23 @@ private:
     }
     void removeRow()
     {
-        MatrixType::size_type nRows = this->matrix.shape()[0];
-        MatrixType::size_type const nColumns = this->matrix.shape()[1];
-        if (nRows == 0) return;
-        --nRows;
+        if (this->nRows == 0) return;
+        --this->nRows;
 
-        for (MatrixType::size_type col = 0; col < nColumns; ++col)
+        for (typename MatrixType::size_type col = 0; col < this->nColumns; ++col)
         {
-            gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->matrix[nRows][col]));
+            gtk_container_remove(GTK_CONTAINER(this->gtkTable), (GtkWidget*)this->matrix.back().at(col));
         }
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons));
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->rowHeader.top()));
 
         this->rowHeader.pop();
-        this->matrix.resize(boost::extents[nRows][nColumns]);
-        gtk_table_resize(this->gtkTable, nRows + 2, nColumns + 2);
+        this->matrix.pop_back();
+        gtk_table_resize(this->gtkTable, this->nRows + 2, this->nColumns + 2);
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons),
-                         0, 1, nRows + 2, nRows + 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
+                         0, 1, this->nRows + 2, this->nRows + 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
     }
 
     static void stAddColumn(GtkWidget* widget, gpointer data)
@@ -143,31 +163,28 @@ private:
     }
     void addColumn()
     {
-        MatrixType::size_type const nRows = this->matrix.shape()[0];
-        MatrixType::size_type const nColumns = this->matrix.shape()[1] + 1;
+        ++this->nColumns;
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons));
 
-        this->matrix.resize(boost::extents[nRows][nColumns]);
-        gtk_table_resize(this->gtkTable, nRows + 2, nColumns + 2);
+        gtk_table_resize(this->gtkTable, this->nRows + 2, this->nColumns + 2);
 
-        GtkLabel* const gtkLabel = GTK_LABEL(gtk_label_new(boost::lexical_cast<std::string>(nColumns - 1).c_str()));
+        GtkLabel* const gtkLabel = GTK_LABEL(gtk_label_new(boost::lexical_cast<std::string>(this->nColumns - 1).c_str()));
         g_object_ref_sink(G_OBJECT(gtkLabel));
         this->columnHeader.push(gtkLabel);
-        gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), nColumns, nColumns + 1, 0, 1);
+        gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), this->nColumns, this->nColumns + 1, 0, 1);
 
-        for (MatrixType::size_type row = 0; row < nRows; ++row)
+        for (typename MatrixType::size_type row = 0; row < this->nRows; ++row)
         {
-            GtkSpinButton* const gtkSpinButton = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(0, 10, 1));
-            g_object_ref_sink(G_OBJECT(gtkSpinButton));
+            ElementWidget elementWidget(this->defaultElement);
+            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)elementWidget,
+                                      this->nColumns, this->nColumns + 1, row + 1, row + 2);
 
-            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), GTK_WIDGET(gtkSpinButton),
-                                      nColumns, nColumns + 1, row + 1, row + 2);
-            this->matrix[row][nColumns - 1] = gtkSpinButton;
+            this->matrix.at(row).push_back(boost::move(elementWidget));
         }
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons),
-                         nColumns + 2, nColumns + 3, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
+                         this->nColumns + 2, this->nColumns + 3, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
 
         gtk_widget_show_all(GTK_WIDGET(this->gtkTable));
     }
@@ -179,25 +196,23 @@ private:
     }
     void removeColumn()
     {
-        MatrixType::size_type const nRows = this->matrix.shape()[0];
-        MatrixType::size_type nColumns = this->matrix.shape()[1];
-        if (nColumns == 0) return;
-        --nColumns;
+        if (this->nColumns == 0) return;
+        --this->nColumns;
 
-        for (MatrixType::size_type row = 0; row < nRows; ++row)
+        for (typename MatrixType::size_type row = 0; row < nRows; ++row)
         {
-            gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->matrix[row][nColumns]));
+            gtk_container_remove(GTK_CONTAINER(this->gtkTable), (GtkWidget*)this->matrix.at(row).back());
+            this->matrix.at(row).pop_back();
         }
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons));
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->columnHeader.top()));
 
         this->columnHeader.pop();
-        this->matrix.resize(boost::extents[nRows][nColumns]);
-        gtk_table_resize(this->gtkTable, nRows + 2, nColumns + 2);
+        gtk_table_resize(this->gtkTable, this->nRows + 2, this->nColumns + 2);
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons),
-                         nColumns + 2, nColumns + 3, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
+                         this->nColumns + 2, this->nColumns + 3, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
     }
 
     GtkHBox* createButtons(GCallback addCallback, GCallback removeCallback)

@@ -7,7 +7,8 @@ GIMP_LIBS=`$(GIMPTOOL) --libs`
 CV_FLAGS=`pkg-config --cflags opencv`
 CV_LIBS=`pkg-config --libs opencv`
 
-CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -I$(CURDIR) -O3
+CXX_FLAGS=$(GIMP_FLAGS) $(CV_FLAGS) -I$(CURDIR) -ansi -pedantic -Wall -Wextra -ggdb
+CXX_LIBS=$(GIMP_LIBS) $(CV_LIBS)
 
 RM=rm -f
 
@@ -17,7 +18,7 @@ OBJECTS=$(SOURCES:%.cpp=%.o)
 all: opencv
 
 opencv: $(OBJECTS)
-	$(CXX) $(GIMP_LIBS) $(CV_LIBS) $^ -o $@
+	$(CXX) $(CXX_LIBS) $^ -o $@
 
 %.o: %.cpp
 	$(CXX) $(CXX_FLAGS) -c $^ -o $@
