@@ -17,10 +17,13 @@
  */
 #include "dilate.hpp"
 
+#include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/interface.hpp"
 #include "utility/meta.hpp"
+#include "widget/enum_widget.hpp"
 #include "widget/pair_widget.hpp"
+#include "widget/numeric_widget.hpp"
 #include "widget/mat_widget.hpp"
 
 #include <gtk/gtk.h>
@@ -54,11 +57,17 @@ namespace
 
         std::vector<boost::tuple<std::string, GtkWidget*> > argumentPairs;
 
-        PairWidget<cv::Size_<int> > ksizeWidget(0, 0);
-        argumentPairs.push_back(makeArgumentPair("ksize:", ksizeWidget));
-
         MatWidget<double> kernelWidget(0.0);
         argumentPairs.push_back(makeArgumentPair("kernel:", kernelWidget));
+
+        PairWidget<cv::Point_<int> > anchorWidget(-1, -1);
+        argumentPairs.push_back(makeArgumentPair("anchor:", anchorWidget));
+
+        NumericWidget<int> iterationsWidget(1);
+        argumentPairs.push_back(makeArgumentPair("iterations:", iterationsWidget));
+
+        EnumWidget borderTypeWidget(TYPE_BORDER_ENUM, cv::BORDER_CONSTANT);
+        argumentPairs.push_back(makeArgumentPair("borderType:", borderTypeWidget));
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
                           GTK_WIDGET(bundleWidgets(argumentPairs)));
@@ -67,7 +76,11 @@ namespace
         boost::optional<Arguments> arguments;
         if (gimp_dialog_run(GIMP_DIALOG(dialog)) == GTK_RESPONSE_OK)
         {
-            // arguments = Arguments(ksizeWidget, anchorWidget, borderTypeWidget);
+            arguments = Arguments(kernelWidget,
+                                  anchorWidget,
+                                  iterationsWidget,
+                                  borderTypeWidget,
+                                  cv::Scalar());
         }
 
         gtk_widget_destroy(GTK_WIDGET(dialog));
@@ -116,7 +129,7 @@ void imgproc::dilate::run(GimpRunMode, gint32, gint32 drawableId)
 
     cv::Mat src = drawableToMat(drawable);
     cv::Mat dst;
-    // cv::dilate(src, dst, UNPACK_TUPLE(*arguments, 0, 1));
+    cv::dilate(src, dst, UNPACK_TUPLE(*arguments, 0, 4));
     setMatToDrawable(dst, drawable);
 
     gimp_displays_flush();

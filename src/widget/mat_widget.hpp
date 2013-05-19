@@ -95,7 +95,16 @@ public:
 
     operator typename cv::Mat_<MatType>()
     {
-        return cv::Mat_<MatType>();
+        cv::Mat_<MatType> mat(this->nRows, this->nColumns);
+        for (typename MatrixType::size_type row = 0; row < this->nRows; ++row)
+        {
+            for (typename MatrixType::size_type column = 0; column < this->nColumns; ++column)
+            {
+                mat(row, column) = this->matrix.at(row).at(column);
+            }
+        }
+
+        return mat;
     }
 
 private:
