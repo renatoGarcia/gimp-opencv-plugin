@@ -71,6 +71,18 @@ public:
 
     ~MatWidget()
     {
+        while (!this->rowHeader.empty())
+        {
+            g_object_unref(G_OBJECT(this->rowHeader.top()));
+            this->rowHeader.pop();
+        }
+
+        while (!this->columnHeader.empty())
+        {
+            g_object_unref(G_OBJECT(this->columnHeader.top()));
+            this->columnHeader.pop();
+        }
+
         g_object_unref(G_OBJECT(this->gtkTable));
         g_object_unref(G_OBJECT(this->gtkHBox_rowButons));
         g_object_unref(G_OBJECT(this->gtkHBox_colButons));
@@ -147,6 +159,7 @@ private:
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons));
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->rowHeader.top()));
+        g_object_unref(G_OBJECT(this->rowHeader.top()));
 
         this->rowHeader.pop();
         this->matrix.pop_back();
@@ -207,6 +220,7 @@ private:
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons));
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->columnHeader.top()));
+        g_object_unref(G_OBJECT(this->columnHeader.top()));
 
         this->columnHeader.pop();
         gtk_table_resize(this->gtkTable, this->nRows + 2, this->nColumns + 2);
