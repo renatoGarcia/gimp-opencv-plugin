@@ -21,16 +21,25 @@
 #include <glib-object.h>
 #include <libgimp/gimpui.h>
 
+#include <boost/noncopyable.hpp>
+
 class EnumWidget
+    : private boost::noncopyable
 {
 public:
     EnumWidget(GType enumType, gint defaultItem)
         : gimpEnumComboBox(GIMP_ENUM_COMBO_BOX(gimp_enum_combo_box_new(enumType)))
     {
+        g_object_ref_sink(G_OBJECT(this->gimpEnumComboBox));
         gimp_int_combo_box_set_active(GIMP_INT_COMBO_BOX(this->gimpEnumComboBox), defaultItem);
     }
 
-    operator GtkWidget*()
+    ~EnumWidget()
+    {
+        g_object_unref(G_OBJECT(this->gimpEnumComboBox));
+    }
+
+    operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gimpEnumComboBox);
     }
@@ -44,7 +53,7 @@ public:
     }
 
 private:
-    GimpEnumComboBox* gimpEnumComboBox;
+    GimpEnumComboBox* const gimpEnumComboBox;
 };
 
 #endif /* _WIDGET_ENUM_WIDGET_HPP_ */

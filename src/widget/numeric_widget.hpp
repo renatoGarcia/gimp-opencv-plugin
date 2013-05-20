@@ -22,14 +22,12 @@
 
 #include <gtk/gtk.h>
 
-#include <boost/move/utility.hpp>
-#include <cstddef>
+#include <boost/noncopyable.hpp>
 
 template <typename NumericType>
 class NumericWidget
+    : private boost::noncopyable
 {
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(NumericWidget<NumericType>)
-
 public:
     explicit NumericWidget(NumericType const& defaultValue)
         : gtkSpinButton(GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(SpinButtonTraits<NumericType>::min(),
@@ -40,45 +38,23 @@ public:
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(this->gtkSpinButton), defaultValue);
     }
 
-    explicit NumericWidget(BOOST_RV_REF(NumericWidget) other)
-        : gtkSpinButton(other.gtkSpinButton)
-    {
-        other.gtkSpinButton = NULL;
-    }
-
-    NumericWidget& operator=(BOOST_RV_REF(NumericWidget) other)
-    {
-        if (this->gtkSpinButton != NULL)
-        {
-            g_object_unref(G_OBJECT(this->gtkSpinButton));
-        }
-
-        this->gtkSpinButton = other.gtkSpinButton;
-        other.gtkSpinButton = NULL;
-
-        return *this;
-    }
-
     ~NumericWidget()
     {
-       if (this->gtkSpinButton != NULL)
-       {
-           g_object_unref(G_OBJECT(this->gtkSpinButton));
-       }
+        g_object_unref(G_OBJECT(this->gtkSpinButton));
     }
 
-    operator GtkWidget*()
+    operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkSpinButton);
     }
 
-    operator NumericType()
+    operator NumericType() const
     {
         return gtk_spin_button_get_value(this->gtkSpinButton);
     }
 
 private:
-    GtkSpinButton* gtkSpinButton;
+    GtkSpinButton* const gtkSpinButton;
 };
 
 #endif /* _WIDGET_NUMERIC_WIDGET_HPP_ */

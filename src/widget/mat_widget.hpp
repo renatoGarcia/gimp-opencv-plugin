@@ -22,8 +22,10 @@
 
 #include <gtk/gtk.h>
 
-#include <boost/container/vector.hpp>
+#include <boost/container/list.hpp>
+#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/noncopyable.hpp>
 #include <stack>
 #include <string>
 
@@ -42,18 +44,21 @@ namespace mat_widget_detail
 
 template <typename MatType>
 class MatWidget
+    : private boost::noncopyable
 {
 private:
     typedef MatType ElementType;
     typedef typename mat_widget_detail::SelectWidget<ElementType>::type ElementWidget;
-    // Boost multi_array doesn't work with movable-only types...
-    typedef boost::container::vector<boost::container::vector<ElementWidget> > MatrixType;
+    // Boost multi_array doesn't work with movable-only types, neither hava an emplace inserter...
+    typedef boost::container::list<boost::container::list<ElementWidget> > MatrixType;
 
 public:
     explicit MatWidget(ElementType const& defaultElement)
         : gtkTable(GTK_TABLE(gtk_table_new(1, 1, FALSE)))
         , gtkHBox_rowButons(this->createButtons(G_CALLBACK(stAddRow), G_CALLBACK(stRemoveRow)))
         , gtkHBox_colButons(this->createButtons(G_CALLBACK(stAddColumn), G_CALLBACK(stRemoveColumn)))
+        , rowHeader()
+        , columnHeader()
         , matrix()
         , nRows(0)
         , nColumns(0)
@@ -88,19 +93,26 @@ public:
         g_object_unref(G_OBJECT(this->gtkHBox_colButons));
     }
 
-    operator GtkWidget*()
+    operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkTable);
     }
 
-    operator typename cv::Mat_<MatType>()
+    operator typename cv::Mat_<MatType>() const
     {
         cv::Mat_<MatType> mat(this->nRows, this->nColumns);
-        for (typename MatrixType::size_type row = 0; row < this->nRows; ++row)
+
+        int iRow = 0;
+        for (typename MatrixType::const_iterator rowIt = this->matrix.begin();
+            rowIt != this->matrix.end();
+             ++rowIt, ++iRow)
         {
-            for (typename MatrixType::size_type column = 0; column < this->nColumns; ++column)
+            int iColumn = 0;
+            for (typename MatrixType::value_type::const_iterator elementIt = rowIt->begin();
+                 elementIt != rowIt->end();
+                 ++elementIt, ++iColumn)
             {
-                mat(row, column) = this->matrix.at(row).at(column);
+                mat(iRow, iColumn) = *elementIt;
             }
         }
 
@@ -136,13 +148,12 @@ private:
         this->rowHeader.push(gtkLabel);
         gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), 0, 1, this->nRows, this->nRows + 1);
 
-        this->matrix.push_back(boost::container::vector<ElementWidget>());
+        this->matrix.push_back(boost::container::list<ElementWidget>());
         for (typename MatrixType::size_type col = 0; col < this->nColumns; ++col)
         {
-            ElementWidget elementWidget(this->defaultElement);
-            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)elementWidget,
+            this->matrix.back().emplace_back(this->defaultElement);
+            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)this->matrix.back().back(),
                                       col + 1, col + 2, this->nRows, this->nRows + 1);
-            this->matrix.back().push_back(boost::move(elementWidget));
         }
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons),
@@ -161,9 +172,9 @@ private:
         if (this->nRows == 0) return;
         --this->nRows;
 
-        for (typename MatrixType::size_type col = 0; col < this->nColumns; ++col)
+        BOOST_FOREACH(typename MatrixType::value_type::value_type const& element, this->matrix.back())
         {
-            gtk_container_remove(GTK_CONTAINER(this->gtkTable), (GtkWidget*)this->matrix.back().at(col));
+            gtk_container_remove(GTK_CONTAINER(this->gtkTable), (GtkWidget*)element);
         }
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons));
@@ -196,13 +207,11 @@ private:
         this->columnHeader.push(gtkLabel);
         gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), this->nColumns, this->nColumns + 1, 0, 1);
 
-        for (typename MatrixType::size_type row = 0; row < this->nRows; ++row)
+        BOOST_FOREACH(typename MatrixType::value_type& row, this->matrix)
         {
-            ElementWidget elementWidget(this->defaultElement);
-            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)elementWidget,
-                                      this->nColumns, this->nColumns + 1, row + 1, row + 2);
-
-            this->matrix.at(row).push_back(boost::move(elementWidget));
+            row.emplace_back(this->defaultElement);
+            gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)row.back(),
+                                      this->nColumns, this->nColumns + 1, row.size(), row.size() + 1);
         }
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons),
@@ -221,10 +230,10 @@ private:
         if (this->nColumns == 0) return;
         --this->nColumns;
 
-        for (typename MatrixType::size_type row = 0; row < nRows; ++row)
+        BOOST_FOREACH(typename MatrixType::value_type& row, this->matrix)
         {
-            gtk_container_remove(GTK_CONTAINER(this->gtkTable), (GtkWidget*)this->matrix.at(row).back());
-            this->matrix.at(row).pop_back();
+            gtk_container_remove(GTK_CONTAINER(this->gtkTable), (GtkWidget*)row.back());
+            row.pop_back();
         }
 
         gtk_container_remove(GTK_CONTAINER(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons));

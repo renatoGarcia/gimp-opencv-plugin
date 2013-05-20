@@ -24,6 +24,7 @@
 #include <gtk/gtk.h>
 
 #include <boost/array.hpp>
+#include <boost/noncopyable.hpp>
 #include <stdexcept>
 
 namespace tuple_widget_detail
@@ -58,15 +59,18 @@ namespace tuple_widget_detail
 
 template <typename TupleType>
 class TupleWidget
+    : private boost::noncopyable
 {
     static int const LENGTH = cv::DataType<TupleType>::channels;
     typedef typename cv::DataType<TupleType>::channel_type ElementType;
 
 public:
-    TupleWidget(TupleType const& defaultTuple)
+    explicit TupleWidget(TupleType const& defaultTuple)
         : gtkHBox(GTK_HBOX(gtk_hbox_new(FALSE, 0)))
         , gtkSpinButtons()
     {
+        g_object_ref_sink(G_OBJECT(this->gtkHBox));
+
         this->addLabel("(");
         for (int i = 0; i < TupleWidget::LENGTH; ++i)
         {
@@ -84,18 +88,23 @@ public:
         this->addLabel(")");
     }
 
-    operator GtkWidget*()
+    ~TupleWidget()
+    {
+        g_object_unref(G_OBJECT(this->gtkHBox));
+    }
+
+    operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkHBox);
     }
 
-    operator TupleType()
+    operator TupleType() const
     {
         return toCvTuple<TupleType>()(this->gtkSpinButtons);
     }
 
 private:
-    GtkHBox* gtkHBox;
+    GtkHBox* const gtkHBox;
     boost::array<GtkSpinButton*, TupleWidget::LENGTH> gtkSpinButtons;
 
     void addLabel(char const* const label)

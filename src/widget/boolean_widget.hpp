@@ -20,27 +20,36 @@
 
 #include <gtk/gtk.h>
 
+#include <boost/noncopyable.hpp>
+
 class BooleanWidget
+    : private boost::noncopyable
 {
 public:
-    BooleanWidget(bool const& defaultValue)
+    explicit BooleanWidget(bool const& defaultValue)
         : gtkCheckButton(GTK_CHECK_BUTTON(gtk_check_button_new()))
     {
+        g_object_ref_sink(G_OBJECT(this->gtkCheckButton));
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(this->gtkCheckButton), defaultValue);
     }
 
-    operator GtkWidget*()
+    ~BooleanWidget()
+    {
+        g_object_unref(G_OBJECT(this->gtkCheckButton));
+    }
+
+    operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkCheckButton);
     }
 
-    operator bool()
+    operator bool() const
     {
         return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(this->gtkCheckButton));
     }
 
 private:
-    GtkCheckButton* gtkCheckButton;
+    GtkCheckButton* const gtkCheckButton;
 };
 
 #endif /* _WIDGET_BOOLEAN_WIDGET_HPP_ */
