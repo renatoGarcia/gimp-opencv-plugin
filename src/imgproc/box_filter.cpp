@@ -24,7 +24,7 @@
 #include "widget/boolean_widget.hpp"
 #include "widget/enum_widget.hpp"
 #include "widget/numeric_widget.hpp"
-#include "widget/pair_widget.hpp"
+#include "widget/tuple_widget.hpp"
 
 #include <gtk/gtk.h>
 #include <libgimp/gimpui.h>
@@ -57,10 +57,10 @@ namespace
 
         std::vector<boost::tuple<std::string, GtkWidget*> > argumentPairs;
 
-        PairWidget<cv::Size_<int> > ksizeWidget(0, 0);
+        TupleWidget<cv::Size> ksizeWidget(cv::Size(0, 0));
         argumentPairs.push_back(makeArgumentPair("ksize:", ksizeWidget));
 
-        PairWidget<cv::Point_<int> > anchorWidget(-1, -1);
+        TupleWidget<cv::Point> anchorWidget(cv::Point(-1, -1));
         argumentPairs.push_back(makeArgumentPair("anchor:", anchorWidget));
 
         BooleanWidget normalizeWidget(true);

@@ -22,7 +22,7 @@
 #include "utility/interface.hpp"
 #include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
-#include "widget/pair_widget.hpp"
+#include "widget/tuple_widget.hpp"
 #include "widget/numeric_widget.hpp"
 #include "widget/mat_widget.hpp"
 
@@ -60,7 +60,7 @@ namespace
         MatWidget<double> kernelWidget(0.0);
         argumentPairs.push_back(makeArgumentPair("kernel:", kernelWidget));
 
-        PairWidget<cv::Point_<int> > anchorWidget(-1, -1);
+        TupleWidget<cv::Point> anchorWidget(cv::Point(-1, -1));
         argumentPairs.push_back(makeArgumentPair("anchor:", anchorWidget));
 
         NumericWidget<int> iterationsWidget(1);
@@ -68,6 +68,9 @@ namespace
 
         EnumWidget borderTypeWidget(TYPE_BORDER_ENUM, cv::BORDER_CONSTANT);
         argumentPairs.push_back(makeArgumentPair("borderType:", borderTypeWidget));
+
+        TupleWidget<cv::Scalar> borderValueWidget(cv::morphologyDefaultBorderValue());
+        argumentPairs.push_back(makeArgumentPair("borderValue:", borderValueWidget));
 
         gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
                           GTK_WIDGET(bundleWidgets(argumentPairs)));
@@ -80,7 +83,7 @@ namespace
                                   anchorWidget,
                                   iterationsWidget,
                                   borderTypeWidget,
-                                  cv::Scalar());
+                                  borderValueWidget);
         }
 
         gtk_widget_destroy(GTK_WIDGET(dialog));

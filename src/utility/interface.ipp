@@ -70,5 +70,36 @@ void insertLayersGroup(gint32 imageId, std::string const& layerGroupName, Single
     }
 }
 
+template <typename T>
+struct toCvTuple<cv::Size_<T> >
+{
+    cv::Size_<T> operator()(boost::array<GtkSpinButton*, 2> gtkSpinButtons)
+    {
+        return cv::Size_<T>(gtk_spin_button_get_value(gtkSpinButtons.at(0)),
+                            gtk_spin_button_get_value(gtkSpinButtons.at(1)));
+    }
+};
+
+template <typename T>
+struct toCvTuple<cv::Point_<T> >
+{
+    cv::Point_<T> operator()(boost::array<GtkSpinButton*, 2> gtkSpinButtons)
+    {
+        return cv::Point_<T>(gtk_spin_button_get_value(gtkSpinButtons.at(0)),
+                             gtk_spin_button_get_value(gtkSpinButtons.at(1)));
+    }
+};
+
+template <typename T>
+struct toCvTuple<cv::Scalar_<T> >
+{
+    cv::Scalar_<T> operator()(boost::array<GtkSpinButton*, 4> gtkSpinButtons)
+    {
+        return cv::Scalar_<T>(gtk_spin_button_get_value(gtkSpinButtons.at(0)),
+                              gtk_spin_button_get_value(gtkSpinButtons.at(1)),
+                              gtk_spin_button_get_value(gtkSpinButtons.at(2)),
+                              gtk_spin_button_get_value(gtkSpinButtons.at(3)));
+    }
+};
 
 #endif /* _INTERFACE_IPP_ */
