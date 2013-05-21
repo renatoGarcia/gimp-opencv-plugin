@@ -17,11 +17,13 @@
  */
 #include "bilateral_filter.hpp"
 
+#include "exception.hpp"
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/interface.hpp"
 #include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
+#include "widget/message_dialog.hpp"
 #include "widget/numeric_widget.hpp"
 
 #include <gtk/gtk.h>
@@ -122,10 +124,21 @@ void imgproc::bilateralFilter::run(GimpRunMode, gint32, gint32 drawableId)
 
     GimpDrawable* const drawable = gimp_drawable_get(drawableId);
 
-    cv::Mat src = drawableToMat(drawable);
-    cv::Mat dst;
-    cv::bilateralFilter(src, dst, UNPACK_TUPLE(*arguments, 0, 3));
-    setMatToDrawable(dst, drawable);
+    try
+    {
+        cv::Mat src = drawableToMat(drawable);
+        cv::Mat dst;
+        cv::bilateralFilter(src, dst, UNPACK_TUPLE(*arguments, 0, 3));
+        setMatToDrawable(dst, drawable);
+    }
+    catch (cv::Exception const& e)
+    {
+        messageDialog(e.what());
+    }
+    catch (IncompatibleMat const& e)
+    {
+        messageDialog(e.what());
+    }
 
     gimp_displays_flush();
     gimp_drawable_detach(drawable);

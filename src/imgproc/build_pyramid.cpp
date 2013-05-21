@@ -17,11 +17,13 @@
  */
 #include "build_pyramid.hpp"
 
+#include "exception.hpp"
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/interface.hpp"
 #include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
+#include "widget/message_dialog.hpp"
 #include "widget/numeric_widget.hpp"
 
 #include <gtk/gtk.h>
@@ -115,14 +117,25 @@ void imgproc::buildPyramid::run(GimpRunMode, gint32 imageId, gint32 drawableId)
 
     GimpDrawable* const drawable = gimp_drawable_get(drawableId);
 
-    cv::Mat src = drawableToMat(drawable);
-    std::vector<cv::Mat> dst;
-    for (int i = 0; i < boost::get<0>(*arguments); ++i)
+    try
     {
-        dst.push_back(cv::Mat());
+        cv::Mat src = drawableToMat(drawable);
+        std::vector<cv::Mat> dst;
+        for (int i = 0; i < boost::get<0>(*arguments); ++i)
+        {
+            dst.push_back(cv::Mat());
+        }
+
+        cv::buildPyramid(src, dst, UNPACK_TUPLE(*arguments, 0, 1));
+
+        insertLayersGroup(imageId, "pyramid", dst);
     }
-
-    cv::buildPyramid(src, dst, UNPACK_TUPLE(*arguments, 0, 1));
-
-    insertLayersGroup(imageId, "pyramid", dst);
+    catch (cv::Exception const& e)
+    {
+        messageDialog(e.what());
+    }
+    catch (IncompatibleMat const& e)
+    {
+        messageDialog(e.what());
+    }
 }

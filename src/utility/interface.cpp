@@ -17,6 +17,8 @@
  */
 #include "interface.hpp"
 
+#include "exception.hpp"
+
 cv::Mat drawableToMat(GimpDrawable* drawable)
 {
     gint x1, y1, x2, y2;
@@ -31,7 +33,7 @@ cv::Mat drawableToMat(GimpDrawable* drawable)
                         x2 - x1, y2 - y1,
                         FALSE, FALSE);
 
-    cv::Mat mat(y2 - y1, x2 - x1, CV_8UC3);
+    cv::Mat mat(y2 - y1, x2 - x1, CV_MAKETYPE(CV_8U, drawable->bpp));
     gimp_pixel_rgn_get_rect(&rgnIn,
                             mat.data,
                             x1, y1,
@@ -42,6 +44,12 @@ cv::Mat drawableToMat(GimpDrawable* drawable)
 
 void setMatToDrawable(cv::Mat& mat, GimpDrawable* drawable)
 {
+    if (mat.depth() != CV_8U)
+        throw IncompatibleMat("cv::Mat depth is not CV_8U");
+
+    if (mat.channels() < 0 || (guint)mat.channels() != drawable->bpp)
+        throw IncompatibleMat("The number of channels in the cv::Mat and in GimpDrawable are diferent.");
+
     gint x1, y1, x2, y2;
     gimp_drawable_mask_bounds(drawable->drawable_id,
                               &x1, &y1,
