@@ -103,7 +103,7 @@ void imgproc::bilateralFilter::install()
         "Gimp OpenCV Plugin Team",
         "2013",
         "_bilateralFilter",
-        "RGB*, GRAY*",
+        "RGB, GRAY",
         GIMP_PLUGIN,
         G_N_ELEMENTS(args), 0,
         args, NULL);
