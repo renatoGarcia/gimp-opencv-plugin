@@ -207,11 +207,13 @@ private:
         this->columnHeader.push(gtkLabel);
         gtk_table_attach_defaults(this->gtkTable, GTK_WIDGET(gtkLabel), this->nColumns, this->nColumns + 1, 0, 1);
 
+        int iRow = 0;
         BOOST_FOREACH(typename MatrixType::value_type& row, this->matrix)
         {
             row.emplace_back(this->defaultElement);
             gtk_table_attach_defaults(GTK_TABLE(this->gtkTable), (GtkWidget*)row.back(),
-                                      this->nColumns, this->nColumns + 1, row.size(), row.size() + 1);
+                                      this->nColumns, this->nColumns + 1, iRow + 1, iRow + 2);
+            ++iRow;
         }
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_colButons),
