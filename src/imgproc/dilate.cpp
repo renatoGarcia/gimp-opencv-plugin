@@ -36,6 +36,8 @@
 #include <boost/tuple/tuple.hpp>
 #include <vector>
 
+#include "utility/layers.hpp"
+
 namespace
 {
     typedef boost::tuple<cv::Mat, cv::Point, int, int, cv::Scalar> Arguments;
@@ -122,7 +124,7 @@ void imgproc::dilate::registerName(std::map<std::string, void(*)(GimpRunMode, gi
     runFunctions["dilate"] = imgproc::dilate::run;
 }
 
-void imgproc::dilate::run(GimpRunMode, gint32, gint32 drawableId)
+void imgproc::dilate::run(GimpRunMode, gint32 /*imageId*/, gint32 drawableId)
 {
     boost::optional<Arguments> arguments = presentDialog();
     if (!arguments)

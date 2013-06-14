@@ -16,6 +16,7 @@
  * with Gimp OpenCV Plugin. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "imgproc.hpp"
+#include "utility/layers.hpp"
 
 #include <libgimp/gimp.h>
 
@@ -63,6 +64,9 @@ static void run(gchar const* name,
     GimpRunMode const runMode = (GimpRunMode)params[0].data.d_int32;
     gint32 const imageId = params[1].data.d_image;
     gint32 const drawableId = params[2].data.d_drawable;
+
+    Layers::setCurrentImageId(imageId);
+
     runFunctions[name](runMode, imageId, drawableId);
 }
 

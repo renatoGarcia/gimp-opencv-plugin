@@ -31,7 +31,7 @@ namespace imgproc
 
         void registerName(std::map<std::string, void(*)(GimpRunMode, gint32, gint32)>& runFunctions);
 
-        void run(GimpRunMode, gint32 imageId, gint32 drawableId);
+        void run(GimpRunMode, gint32 /*imageId*/, gint32 drawableId);
     }
 }
 

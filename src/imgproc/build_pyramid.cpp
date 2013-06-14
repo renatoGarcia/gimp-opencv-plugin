@@ -21,6 +21,7 @@
 #include "imgproc/enums.hpp"
 #include "utility/bundle_widgets.hpp"
 #include "utility/interface.hpp"
+#include "utility/layers.hpp"
 #include "utility/meta.hpp"
 #include "widget/enum_widget.hpp"
 #include "widget/message_dialog.hpp"
@@ -107,7 +108,7 @@ void imgproc::buildPyramid::registerName(std::map<std::string, void(*)(GimpRunMo
     runFunctions["buildPyramid"] = imgproc::buildPyramid::run;
 }
 
-void imgproc::buildPyramid::run(GimpRunMode, gint32 imageId, gint32 drawableId)
+void imgproc::buildPyramid::run(GimpRunMode, gint32 /*imageId*/, gint32 drawableId)
 {
     boost::optional<Arguments> arguments = presentDialog();
     if (!arguments)
@@ -128,7 +129,7 @@ void imgproc::buildPyramid::run(GimpRunMode, gint32 imageId, gint32 drawableId)
 
         cv::buildPyramid(src, dst, UNPACK_TUPLE(*arguments, 0, 1));
 
-        insertLayersGroup(imageId, "pyramid", dst);
+        Layers::insertLayersGroup("pyramid", dst);
     }
     catch (cv::Exception const& e)
     {
