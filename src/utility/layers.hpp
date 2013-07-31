@@ -20,6 +20,7 @@
 
 #include <gtk/gtk.h>
 
+#include <boost/optional/optional.hpp>
 #include <string>
 
 class Layers
@@ -27,12 +28,25 @@ class Layers
 public:
     static void setCurrentImageId(gint32 imageId);
 
-    static void selectLayer();
+    // Presents the tree of layers and return the drawable id of the selected layer, if any.
+    // Can throw std::runtime_error.
+    static boost::optional<int> selectLayer();
 
     template <typename SinglePassRange>
     static void insertLayersGroup(std::string const& layerGroupName, SinglePassRange const& range);
 
 private:
+    enum
+    {
+        ID_COLUMN,
+        IMAGE_COLUMN,
+        NAME_COLUMN,
+        N_COLUMNS
+    };
+
+    static GtkTreeView* buildTreeView(GtkTreeStore* store);
+    static void populateTree(gint32 itemId, GtkTreeStore* store, GtkTreeIter* parent);
+
     Layers();
 
     static gint32 imageId;

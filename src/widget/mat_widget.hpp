@@ -19,6 +19,8 @@
 #define _WIDGET_MAT_WIDGET_HPP_
 
 #include "numeric_widget.hpp"
+#include "utility/interface.hpp"
+#include "utility/layers.hpp"
 
 #include <gtk/gtk.h>
 
@@ -49,7 +51,7 @@ class MatWidget
 private:
     typedef MatType ElementType;
     typedef typename mat_widget_detail::SelectWidget<ElementType>::type ElementWidget;
-    // Boost multi_array doesn't work with movable-only types, neither hava an emplace inserter...
+    // Boost multi_array doesn't work with movable-only types, neither have an emplace inserter...
     typedef boost::container::list<boost::container::list<ElementWidget> > MatrixType;
 
 public:
@@ -67,6 +69,16 @@ public:
         g_object_ref_sink(G_OBJECT(this->gtkTable));
         g_object_ref_sink(G_OBJECT(this->gtkHBox_rowButons));
         g_object_ref_sink(G_OBJECT(this->gtkHBox_colButons));
+
+        //-----------------------------------------------------------
+        GtkButton* const gtkButtonLoad = GTK_BUTTON(gtk_button_new());
+        GtkImage* const gtkImageLoad = GTK_IMAGE(gtk_image_new_from_stock(GTK_STOCK_INDEX, GTK_ICON_SIZE_SMALL_TOOLBAR));
+        gtk_button_set_image(gtkButtonLoad, GTK_WIDGET(gtkImageLoad));
+
+        g_signal_connect(gtkButtonLoad, "clicked", G_CALLBACK(stLoadMat), this);
+        gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(gtkButtonLoad),
+                         0, 1, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
+        //----------------------------------------------------------------
 
         gtk_table_attach(GTK_TABLE(this->gtkTable), GTK_WIDGET(this->gtkHBox_rowButons),
                          0, 1, 1, 2, GTK_SHRINK, GTK_SHRINK, 0, 0);
@@ -129,6 +141,20 @@ private:
     typename MatrixType::size_type nRows;
     typename MatrixType::size_type nColumns;
     ElementType const defaultElement;
+
+    static void stLoadMat(GtkWidget* /*widget*/, gpointer data)
+    {
+        MatWidget* self = reinterpret_cast<MatWidget*>(data);
+        self->loadMat();
+    }
+    void loadMat()
+    {
+        boost::optional<int> selectedLayer = Layers::selectLayer();
+        if (selectedLayer)
+        {
+            cv::Mat image = drawableToMat(gimp_drawable_get(*selectedLayer));
+        }
+    }
 
     static void stAddRow(GtkWidget* /*widget*/, gpointer data)
     {
