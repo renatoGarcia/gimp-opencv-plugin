@@ -39,6 +39,12 @@ public:
         g_object_unref(G_OBJECT(this->gimpEnumComboBox));
     }
 
+    EnumWidget& operator=(int const& value)
+    {
+        gimp_int_combo_box_set_active(GIMP_INT_COMBO_BOX(this->gimpEnumComboBox), value);
+        return *this;
+    }
+
     operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gimpEnumComboBox);

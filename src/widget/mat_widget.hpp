@@ -105,6 +105,38 @@ public:
         g_object_unref(G_OBJECT(this->gtkHBox_colButons));
     }
 
+    template <typename T>
+    MatWidget& operator=(cv::Mat_<T> const& value)
+    {
+        while (this->nRows > value.rows)
+            this->removeRow();
+
+        while (this->nRows < value.rows)
+            this->addRow();
+
+        while (this->nColumns > value.cols)
+            this->removeColumn();
+
+        while (this->nColumns < value.cols)
+            this->addColumn();
+
+        int iRow = 0;
+        for (typename MatrixType::iterator rowIt = this->matrix.begin();
+             rowIt != this->matrix.end();
+             ++rowIt, ++iRow)
+        {
+            int iColumn = 0;
+            for (typename MatrixType::value_type::iterator elementIt = rowIt->begin();
+                 elementIt != rowIt->end();
+                 ++elementIt, ++iColumn)
+            {
+                *elementIt = value(iRow, iColumn);
+            }
+        }
+
+        return *this;
+    }
+
     operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkTable);
@@ -149,11 +181,13 @@ private:
     }
     void loadMat()
     {
-        boost::optional<int> selectedLayer = Layers::selectLayer();
-        if (selectedLayer)
-        {
-            cv::Mat image = drawableToMat(gimp_drawable_get(*selectedLayer));
-        }
+        // boost::optional<int> selectedLayer = Layers::selectLayer();
+        // if (selectedLayer)
+        // {
+        //     cv::Mat_<MatType> image = drawableToMat(gimp_drawable_get(*selectedLayer));
+        cv::Mat_<MatType> image(3, 3);
+        *this = image;
+        // }
     }
 
     static void stAddRow(GtkWidget* /*widget*/, gpointer data)

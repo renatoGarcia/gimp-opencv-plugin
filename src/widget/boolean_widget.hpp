@@ -38,6 +38,12 @@ public:
         g_object_unref(G_OBJECT(this->gtkCheckButton));
     }
 
+    BooleanWidget& operator=(bool const& value)
+    {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(this->gtkCheckButton), value);
+        return *this;
+    }
+
     operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkCheckButton);

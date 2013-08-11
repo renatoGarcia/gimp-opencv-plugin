@@ -93,6 +93,16 @@ public:
         g_object_unref(G_OBJECT(this->gtkHBox));
     }
 
+    TupleWidget& operator=(TupleType const& value)
+    {
+        for (int i = 0; i < TupleWidget::LENGTH; ++i)
+        {
+            gtk_spin_button_set_value(GTK_SPIN_BUTTON(this->gtkSpinButtons.at(i)),
+                                      tuple_widget_detail::get(value, i));
+        }
+        return *this;
+    }
+
     operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkHBox);

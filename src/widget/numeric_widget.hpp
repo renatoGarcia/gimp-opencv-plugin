@@ -43,6 +43,12 @@ public:
         g_object_unref(G_OBJECT(this->gtkSpinButton));
     }
 
+    NumericWidget& operator=(NumericType const& value)
+    {
+        gtk_spin_button_set_value(this->gtkSpinButton, value);
+        return *this;
+    }
+
     operator GtkWidget*() const
     {
         return GTK_WIDGET(this->gtkSpinButton);
